@@ -184,14 +184,23 @@ export default function DopeTechEcommerce() {
   // Auto-shuffle poster products
   useEffect(() => {
     const interval = setInterval(() => {
-      setPosterIndex((prevIndex) => {
-        const productsToShow = products.filter((p: any) => !p.hiddenOnHome).slice(0, 6)
-        return (prevIndex + 1) % productsToShow.length
-      })
+      const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
+      if (container && !container.classList.contains('user-interacting')) {
+        const productsToShow = products.filter((p: any) => !p.hiddenOnHome).slice(0, 6);
+        const currentIndex = posterIndex;
+        const nextIndex = (currentIndex + 1) % productsToShow.length;
+        
+        // Scroll to the next slide
+        const slideWidth = container.clientWidth;
+        const newScrollLeft = nextIndex * slideWidth;
+        
+        container.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
+        setPosterIndex(nextIndex);
+      }
     }, 4000) // Change every 4 seconds
 
     return () => clearInterval(interval)
-  }, [])
+  }, [posterIndex, products])
 
   // Initialize admin mode and promo order preferences
   useEffect(() => {
@@ -910,10 +919,164 @@ export default function DopeTechEcommerce() {
               {/* Big Poster with Smooth Shuffling - Larger Size */}
               <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-2xl">
                 <div className="relative h-72 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] overflow-hidden">
-                  {/* Shuffling Product Images */}
-                  <div className="absolute inset-0 flex transition-transform duration-1000 ease-in-out" style={{ transform: `translateX(-${posterIndex * 100}%)` }}>
+                  {/* Hero Carousel Navigation Buttons - Glassy Style */}
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20">
+                    <button
+                      onClick={() => {
+                        const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
+                        if (container) {
+                          const slideWidth = container.clientWidth;
+                          const currentScroll = container.scrollLeft;
+                          const newScroll = Math.max(0, currentScroll - slideWidth);
+                          container.scrollTo({ left: newScroll, behavior: 'smooth' });
+                          
+                          // Update poster index
+                          const newIndex = Math.round(newScroll / slideWidth);
+                          setPosterIndex(Math.max(0, newIndex));
+                        }
+                      }}
+                      disabled={posterIndex === 0}
+                      className={`w-12 h-12 rounded-full hero-nav-button left-nav flex items-center justify-center transition-all duration-300 ${
+                        posterIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:scale-110'
+                      }`}
+                      aria-label="Previous slide"
+                    >
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
+                    <button
+                      onClick={() => {
+                        const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
+                        if (container) {
+                          const slideWidth = container.clientWidth;
+                          const currentScroll = container.scrollLeft;
+                          const maxScroll = container.scrollWidth - container.clientWidth;
+                          const newScroll = Math.min(maxScroll, currentScroll + slideWidth);
+                          container.scrollTo({ left: newScroll, behavior: 'smooth' });
+                          
+                          // Update poster index
+                          const newIndex = Math.round(newScroll / slideWidth);
+                          const maxIndex = products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).length - 1;
+                          setPosterIndex(Math.min(maxIndex, newIndex));
+                        }
+                      }}
+                      disabled={posterIndex === products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).length - 1}
+                      className={`w-12 h-12 rounded-full hero-nav-button right-nav flex items-center justify-center transition-all duration-300 ${
+                        posterIndex === products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).length - 1 ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:scale-110'
+                      }`}
+                      aria-label="Next slide"
+                    >
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+
+
+                  
+                  {/* Manually Scrollable Product Images */}
+                  <div 
+                    className="flex overflow-x-auto scrollbar-hide h-full scroll-smooth"
+                    style={{ scrollSnapType: 'x mandatory' }}
+                    onScroll={(e) => {
+                      const target = e.currentTarget;
+                      const scrollPosition = target.scrollLeft;
+                      const slideWidth = target.scrollWidth / products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).length;
+                      const currentIndex = Math.round(scrollPosition / slideWidth);
+                      setPosterIndex(currentIndex);
+                    }}
+                    onTouchStart={(e) => {
+                      // Pause auto-scroll on touch
+                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
+                      container.classList.add('user-interacting');
+                      if (container.autoResumeTimer) {
+                        clearTimeout(container.autoResumeTimer);
+                      }
+                    }}
+                    onTouchEnd={(e) => {
+                      // Resume auto-scroll after touch ends
+                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
+                      container.classList.remove('user-interacting');
+                      container.autoResumeTimer = setTimeout(() => {
+                        if (!container.classList.contains('user-interacting')) {
+                          container.classList.remove('user-interacting');
+                        }
+                      }, 3000); // Resume after 3 seconds of no interaction
+                    }}
+                    onMouseDown={(e) => {
+                      // Pause auto-scroll on mouse down
+                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
+                      container.classList.add('user-interacting');
+                      if (container.autoResumeTimer) {
+                        clearTimeout(container.autoResumeTimer);
+                      }
+                    }}
+                    onMouseUp={(e) => {
+                      // Resume auto-scroll after mouse up
+                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
+                      container.classList.remove('user-interacting');
+                      container.autoResumeTimer = setTimeout(() => {
+                        if (!container.classList.contains('user-interacting')) {
+                          container.classList.remove('user-interacting');
+                        }
+                      }, 3000); // Resume after 3 seconds of no interaction
+                    }}
+                    onMouseLeave={(e) => {
+                      // Resume auto-scroll when mouse leaves
+                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
+                      container.classList.remove('user-interacting');
+                      container.autoResumeTimer = setTimeout(() => {
+                        if (!container.classList.contains('user-interacting')) {
+                          container.classList.remove('user-interacting');
+                        }
+                      }, 1000); // Resume faster when mouse leaves
+                    }}
+                    onKeyDown={(e) => {
+                      const target = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
+                      const slideWidth = target.clientWidth;
+                      
+                      if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        target.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+                        // Pause auto-scroll on keyboard interaction
+                        target.classList.add('user-interacting');
+                        if (target.autoResumeTimer) {
+                          clearTimeout(target.autoResumeTimer);
+                        }
+                        target.autoResumeTimer = setTimeout(() => {
+                          if (!target.classList.contains('user-interacting')) {
+                            target.classList.remove('user-interacting');
+                          }
+                        }, 3000);
+                      } else if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        target.scrollBy({ left: slideWidth, behavior: 'smooth' });
+                        // Pause auto-scroll on keyboard interaction
+                        target.classList.add('user-interacting');
+                        if (target.autoResumeTimer) {
+                          clearTimeout(target.autoResumeTimer);
+                        }
+                        target.autoResumeTimer = setTimeout(() => {
+                          if (!target.classList.contains('user-interacting')) {
+                            target.classList.remove('user-interacting');
+                          }
+                        }, 3000);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="region"
+                    aria-label="Hero product carousel - use arrow keys or drag to scroll"
+                  >
                     {products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).map((product, index) => (
-                      <div key={`poster-${product.id}`} className="relative flex-shrink-0 w-full h-full">
+                      <div 
+                        key={`poster-${product.id}`} 
+                        className="relative flex-shrink-0 w-full h-full"
+                        style={{ scrollSnapAlign: 'start' }}
+                      >
                         <img
                           src={product.image}
                           alt={product.name}
@@ -942,7 +1105,14 @@ export default function DopeTechEcommerce() {
                     {products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).map((_, index) => (
                       <button
                         key={index}
-                        onClick={() => setPosterIndex(index)}
+                        onClick={() => {
+                          const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
+                          if (container) {
+                            const slideWidth = container.clientWidth;
+                            container.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
+                            setPosterIndex(index);
+                          }
+                        }}
                         className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-200 ${
                           index === posterIndex 
                             ? 'bg-[#F7DD0F] scale-125' 
@@ -952,6 +1122,8 @@ export default function DopeTechEcommerce() {
                       />
                     ))}
                   </div>
+                  
+
                 </div>
               </div>
             </div>
@@ -969,9 +1141,65 @@ export default function DopeTechEcommerce() {
               
               {/* Marquee Layout - All Devices */}
               <div className="relative overflow-hidden cv-auto">
-                <div className="flex space-x-4 sm:space-x-6 md:space-x-8 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4">
+                
+                <div 
+                  className="flex space-x-4 sm:space-x-6 md:space-x-8 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 scroll-smooth"
+                  onScroll={(e) => {
+                    const target = e.currentTarget;
+                    if (target.scrollLeft > 0) {
+                      target.classList.add('user-scrolling');
+                    } else {
+                      target.classList.remove('user-scrolling');
+                    }
+                  }}
+                  onTouchStart={() => {
+                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                    if (marquee) marquee.style.animationPlayState = 'paused';
+                  }}
+                  onTouchEnd={() => {
+                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                    if (marquee) marquee.style.animationPlayState = 'running';
+                  }}
+                  onMouseDown={() => {
+                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                    if (marquee) marquee.style.animationPlayState = 'paused';
+                  }}
+                  onMouseUp={() => {
+                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                    marquee.style.animationPlayState = 'running';
+                  }}
+                  onMouseLeave={() => {
+                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                    if (marquee) marquee.style.animationPlayState = 'running';
+                  }}
+                  onKeyDown={(e) => {
+                    const target = e.currentTarget;
+                    const scrollAmount = 200;
+                    
+                    if (e.key === 'ArrowLeft') {
+                      e.preventDefault();
+                      target.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                      const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                      if (marquee) marquee.style.animationPlayState = 'paused';
+                      setTimeout(() => {
+                        if (marquee) marquee.style.animationPlayState = 'running';
+                      }, 1000);
+                    } else if (e.key === 'ArrowRight') {
+                      e.preventDefault();
+                      target.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                      const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                      if (marquee) marquee.style.animationPlayState = 'paused';
+                      setTimeout(() => {
+                        if (marquee) marquee.style.animationPlayState = 'running';
+                      }, 1000);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="region"
+                  aria-label="Product carousel - use arrow keys or drag to scroll"
+                >
                   {/* Continuous Marquee Row */}
-                  <div className="flex animate-marquee space-x-4 sm:space-x-6 md:space-x-8">
+                  <div className="flex animate-marquee space-x-4 sm:space-x-6 md:space-x-8 min-w-max">
                     {/* First set of products */}
                     {products.filter((p: any) => !p.hiddenOnHome).map((product, index) => (
                       <div key={`marquee-first-${product.id}`} className="group relative flex-shrink-0">
@@ -1029,6 +1257,13 @@ export default function DopeTechEcommerce() {
                     ))}
                   </div>
                 </div>
+                
+                {/* Scroll Hint */}
+                <div className="text-center mt-2 text-xs text-gray-500 scroll-hint">
+                  <span className="hidden sm:inline">← Drag to scroll • </span>
+                  <span className="sm:hidden">← Swipe to scroll • </span>
+                  Auto-scrolls when idle
+                </div>
               </div>
             </div>
 
@@ -1067,7 +1302,7 @@ export default function DopeTechEcommerce() {
                           <p className="text-[#F7DD0F] font-bold text-xl sm:text-2xl lg:text-3xl mb-3">Rs {product.price}</p>
                           <button
                             onClick={() => addToCart(product)}
-                            className="bg-[#F7DD0F] text-black px-4 py-2 sm:px-5 sm:py-3 rounded-xl font-bold hover:bg-[#F7DD0F]/90 transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full text-sm sm:text-base shadow-lg"
+                            className="bg-[#F7DD0F] text-black px-4 py-2 sm:px-5 sm:py-3 rounded-xl font-bold hover:bg-[#F7DD0F]/90 transition-all duration-300 hover:shadow-2xl w-full text-sm sm:text-base shadow-lg"
                           >
                             Add to Cart
                           </button>
@@ -1166,7 +1401,7 @@ export default function DopeTechEcommerce() {
                 : "grid-cols-1"
             }`}>
             {filteredProducts.map((product, index) => (
-              <div key={product.id} className="group animate-fade-in-up mobile-product-card hover-lift" style={{ animationDelay: `${index * 0.1}s` }}>
+              <div key={product.id} data-product-id={product.id} className="group animate-fade-in-up mobile-product-card hover-lift" style={{ animationDelay: `${index * 0.1}s` }}>
                 <div className="dopetech-card p-3 sm:p-6 h-full flex flex-col premium-card hover-scale rounded-2xl shadow-lg border border-gray-200/10 backdrop-blur-sm">
                   {/* Product Image with Enhanced Hover Effects */}
                   <div className="relative image-container overflow-hidden rounded-xl aspect-square sm:aspect-auto mb-2 sm:mb-5">
@@ -1177,6 +1412,8 @@ export default function DopeTechEcommerce() {
                         loading="lazy"
                         decoding="async"
                     />
+                    
+
                     
                     {/* Gradient Overlay on Hover */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

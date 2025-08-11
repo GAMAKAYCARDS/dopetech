@@ -578,27 +578,26 @@ html {
   transform: translateY(-2px);
 }
 
-/* Themed scrollbars for in-page scrollable elements (not the viewport) */
+/* Completely hide all scrollbars */
 body * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--dopetech-yellow) rgba(255,255,255,0.08);
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
 }
 
-/* WebKit - theme only element scrollbars, not the page root */
+/* WebKit - completely hide all scrollbars */
 body *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 0;
+  height: 0;
+  display: none;
 }
 body *::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.08);
+  display: none;
 }
 body *::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(247,221,15,0.9), rgba(247,221,15,0.6));
-  border-radius: 10px;
-  border: 2px solid rgba(0,0,0,0.35);
+  display: none;
 }
 body *::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(247,221,15,1), rgba(247,221,15,0.75));
+  display: none;
 }
 
 /* Enhanced touch feedback */
@@ -742,9 +741,9 @@ body *::-webkit-scrollbar-thumb:hover {
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --dopetech-yellow: #F7DD0F;
   --dopetech-dark: #1a1a1a;
@@ -1166,6 +1165,158 @@ body *::-webkit-scrollbar-thumb:hover {
   animation-play-state: paused;
 }
 
+/* Enhanced Manual Scrolling */
+.user-scrolling .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* Scroll Indicators */
+.scroll-indicator {
+  transition: opacity 0.3s ease;
+  opacity: 0.6;
+}
+
+.scroll-indicator:hover {
+  opacity: 1;
+}
+
+/* Enhanced scroll indicators for better visibility */
+.scroll-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: inherit;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+/* Scroll indicator dots */
+.scroll-indicator .w-2 {
+  transition: all 0.3s ease;
+}
+
+.scroll-indicator:hover .w-2 {
+  transform: scale(1.5);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Smooth Scrolling */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced Touch Scrolling */
+@media (hover: none) and (pointer: coarse) {
+  .animate-marquee {
+    animation-play-state: paused;
+  }
+  
+  .user-scrolling .animate-marquee {
+    animation-play-state: paused;
+  }
+}
+
+/* Scroll Animation Effects */
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.user-scrolling .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* Enhanced scroll container - completely hidden scrollbars */
+.overflow-x-auto {
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  display: none;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  display: none;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  display: none;
+}
+
+/* Hero Banner Specific Scrolling */
+.overflow-x-auto.scroll-smooth {
+  scroll-snap-type: x mandatory;
+}
+
+.overflow-x-auto.scroll-smooth > div {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Enhanced scroll indicators for hero banner */
+.scroll-indicator {
+  transition: all 0.3s ease;
+  opacity: 0.6;
+}
+
+.scroll-indicator:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Hero banner scroll hint */
+.scroll-hint-hero {
+  animation: scroll-hint 2s ease-in-out infinite;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.scroll-hint-hero:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Auto-resume functionality */
+.user-interacting .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* Enhanced frosted glass effect */
+.frosted-glass-enhanced {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Scroll Hint Animation */
+@keyframes scroll-hint {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.scroll-hint {
+  animation: scroll-hint 2s ease-in-out infinite;
+}
+
 /* Smooth scrolling behavior */
 html {
   scroll-behavior: smooth;
@@ -1183,5 +1334,303 @@ html {
   
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* ===== COMPREHENSIVE SCROLLBAR HIDING ===== */
+/* Hide ALL scrollbars across the entire application */
+
+/* Global scrollbar hiding for all elements */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Specific element scrollbar hiding */
+html, body, div, section, article, aside, nav, header, footer, main {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+div::-webkit-scrollbar,
+section::-webkit-scrollbar,
+article::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+header::-webkit-scrollbar,
+footer::-webkit-scrollbar,
+main::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Scrollable container scrollbar hiding */
+.overflow-auto,
+.overflow-x-auto,
+.overflow-y-auto,
+.overflow-scroll,
+.overflow-x-scroll,
+.overflow-y-scroll {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.overflow-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-scroll::-webkit-scrollbar,
+.overflow-x-scroll::-webkit-scrollbar,
+.overflow-y-scroll::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* ===== END SCROLLBAR HIDING ===== */
+
+/* Enhanced Product Card Navigation Buttons */
+.product-nav-button {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(247, 221, 15, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity, box-shadow;
+  cursor: pointer;
+}
+
+.product-nav-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(247, 221, 15, 0.6);
+  transform: scale(1.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 30px rgba(247, 221, 15, 0.2);
+}
+
+.product-nav-button:active {
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+.product-nav-button svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+}
+
+.product-nav-button:hover svg {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transform: scale(1.1);
+}
+
+/* Product card hover state for navigation buttons */
+.group:hover .product-nav-button {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Left button animation */
+.group:hover .product-nav-button.left-nav {
+  transform: translateX(0);
+}
+
+/* Right button animation */
+.group:hover .product-nav-button.right-nav {
+  transform: translateX(0);
+}
+
+/* Enhanced button states */
+.product-nav-button:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(247, 221, 15, 0.4);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.3), 
+    0 4px 12px rgba(247, 221, 15, 0.15),
+    0 0 20px rgba(247, 221, 15, 0.1);
+}
+
+.product-nav-button:not(:disabled):active {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(0.95);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.2), 
+    0 2px 6px rgba(247, 221, 15, 0.1);
+}
+
+/* Disabled state styling */
+.product-nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.product-nav-button:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Button entrance animation */
+.product-nav-button {
+  animation: button-entrance 0.3s ease-out;
+}
+
+@keyframes button-entrance {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+}
+
+/* Ensure navigation buttons are always visible and functional */
+.product-nav-button {
+  position: relative;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+/* Mobile-first approach - buttons visible by default on mobile */
+@media (max-width: 640px) {
+  .product-nav-button {
+    opacity: 0.8 !important;
+    transform: none !important;
+  }
+  
+  .product-nav-button:hover {
+    opacity: 1 !important;
+  }
+}
+
+/* Desktop - buttons appear on hover */
+@media (min-width: 641px) {
+  .product-nav-button {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  
+  .group:hover .product-nav-button {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Enhanced button interactions */
+.product-nav-button:focus {
+  outline: 2px solid rgba(247, 221, 15, 0.8);
+  outline-offset: 2px;
+}
+
+.product-nav-button:focus-visible {
+  outline: 2px solid rgba(247, 221, 15, 0.8);
+  outline-offset: 2px;
+}
+
+/* Button press effect */
+.product-nav-button:active {
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+/* Ensure buttons work on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .product-nav-button {
+    opacity: 0.9;
+    transform: none;
+  }
+  
+  .product-nav-button:active {
+    opacity: 1;
+    transform: scale(0.95);
+  }
+}
+
+/* Hero Carousel Navigation Buttons - Glassy Style */
+.hero-nav-button {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(247, 221, 15, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity, box-shadow;
+  cursor: pointer;
+}
+
+.hero-nav-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(247, 221, 15, 0.6);
+  transform: scale(1.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 30px rgba(247, 221, 15, 0.2);
+}
+
+.hero-nav-button:active {
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+.hero-nav-button svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+}
+
+.hero-nav-button:hover svg {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transform: scale(1.1);
+}
+
+.hero-nav-button:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(247, 221, 15, 0.4);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.3), 
+    0 4px 12px rgba(247, 221, 15, 0.15),
+    0 0 20px rgba(247, 221, 15, 0.1);
+}
+
+.hero-nav-button:not(:disabled):active {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(0.95);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.2), 
+    0 2px 6px rgba(247, 221, 15, 0.1);
+}
+
+.hero-nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.hero-nav-button:disabled:hover {
+  transform: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(247, 221, 15, 0.1);
+}
+
+/* Hero button entrance animation */
+.hero-nav-button {
+  animation: hero-button-entrance 0.3s ease-out;
+}
+
+@keyframes hero-button-entrance {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
