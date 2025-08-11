@@ -1,0 +1,25 @@
+[build]
+  command = "pnpm build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Specific redirects for admin page
+[[redirects]]
+  from = "/doptechadmin"
+  to = "/doptechadmin/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/doptechadmin/"
+  to = "/doptechadmin/index.html"
+  status = 200
+  force = true
+
+# Catch-all for other routes (SPA routing)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 
